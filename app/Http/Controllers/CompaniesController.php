@@ -6,16 +6,41 @@ namespace App\Http\Controllers;
 use App\Models\Companies;
 use Illuminate\Http\Request;
 use App\Http\Requests\CompaniesRequest;
+use Yajra\DataTables\Facades\Datatables;
 
 class CompaniesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-         $CompanyData=Companies::get();
-        return view('company/index',compact('CompanyData'));
+
+         if ($request->ajax()) {
+            $data = Companies::get();
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function($row){
+
+                    $actionBtn =   '
+                                   <a href="'.route('viewcompany', $row->id).'"
+                                    class="edit btn btn-warning btn-sm">View</a>
+
+                                    <a href="'.route('editCompany', $row->id).'"
+                                    class="edit btn btn-success btn-sm">Edit</a>
+
+                      <form action="'.route('deleteCompany', $row->id).'" method="POST" class="d-inline">
+                        '.csrf_field().'
+                        '.method_field('DELETE').'
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Are you sure?\')">Delete</button>
+                    </form>';
+                    return $actionBtn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+         
+        return view('company/index');
     }
 
     /**
