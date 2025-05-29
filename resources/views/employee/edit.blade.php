@@ -82,7 +82,7 @@
                                 <select class="form-select  @error('companyId') is-invalid @enderror" name="companyId">
                                    <option value=""> </option>
                                     @foreach ($company as $companies)
-                      <option value="{{ $companies->id }}" {{ $data->company_id == $companies->id ? 'selected' : '' }}>
+                      <option value="{{ $companies->id }}"  @if($data->company_id == $companies->id) selected @endif>
                                             {{ $companies->name }}
                                         </option>
                                     @endforeach
